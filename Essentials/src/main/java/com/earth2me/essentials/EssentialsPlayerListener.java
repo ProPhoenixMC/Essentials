@@ -733,7 +733,18 @@ public class EssentialsPlayerListener implements Listener {
         }
         final User user = ess.getUser(player);
         if (ess.getSettings().registerBackInListener() && user.isAuthorized("essentials.back.onteleport")) {
-            user.setLastLocation();
+            //noinspection DataFlowIssue - not real
+            if (event.getFrom().getWorld() == event.getTo().getWorld()) {
+                double distanceSquared = event.getFrom().distanceSquared(event.getTo());
+                if (distanceSquared > 16) {
+                    if (distanceSquared < 100) {
+                        Bukkit.getConsoleSender().sendMessage("§eBackCancel: §f" + player.getName() + "§e > §f" + event.getCause() + "§e d: §f" + Math.sqrt(distanceSquared));
+                    }
+                    user.setLastLocation();
+                }
+            } else {
+                user.setLastLocation();
+            }
         }
         if (ess.getSettings().isTeleportInvulnerability()) {
             user.enableInvulnerabilityAfterTeleport();
